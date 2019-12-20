@@ -43,6 +43,13 @@ func NewReedSolomonSplitter(r io.Reader, numData, numParity, size uint64) (
 	fi, ok := r.(files.FileInfo)
 	if ok {
 		fileSize, err = fi.Size()
+		if fileSize == 0 {
+			all, err := ioutil.ReadAll(r)
+			if err != nil {
+				return nil, err
+			}
+			fileSize = int64(len(all))
+		}
 	}
 	// If not a FileInfo object, or fails to fetch a size, try reading
 	// the whole stream in order to obtain size (this is common for testing).
